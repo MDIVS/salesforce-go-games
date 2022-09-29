@@ -1,7 +1,9 @@
 @isTest 
 private class AnimalLocatorTest {
-    static testMethod void testPostCallout() {
+    @isTest
+    static void testPostCallout() {
         Test.setMock(HttpCalloutMock.class, new AnimalLocatorMock());  
-        String strResp = AnimalLocator.getAnimalNameById(2);
+        String animalName = AnimalLocator.getAnimalNameById(2);
+        System.assertEquals('Test', animalName);
     }
 }
