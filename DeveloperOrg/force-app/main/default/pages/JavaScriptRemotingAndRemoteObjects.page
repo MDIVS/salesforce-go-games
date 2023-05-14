@@ -33,10 +33,14 @@
 
     <script type="text/javascript">
         function getRecordsDetails() {
-            var objName = document.getElementById("JSRFilter").value;            
+            var filter = document.getElementById("JSRFilter").value;
+            console.log(filter);
+
+            fetchProductsByRemoteObjects(filter);
+                     
             Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.JSRemotingAndRemoteObjectsController.getProductList}',
-                objName,
+                filter,
                 function(result, event) {
                     if (event.status) {                        
                         var l = result.length;
@@ -52,7 +56,10 @@
                                     '</tr>';
                                 markup += recordDetail;
                             }
-                            document.getElementById("details").innerHTML = markup;
+
+                            var details = document.getElementById("details");
+                            removeAllChildNodes(details);
+                            details.innerHTML = markup;
                         }                                                                       
                     }
                     else if (event.type === 'exception') document.getElementById("details").innerHTML = event.message + "<br/>\n<pre>" + event.where + "</pre>";
@@ -61,6 +68,39 @@
                 {escape: true}
             );
         }
+
+        function fetchProductsByRemoteObjects(filter) {
+            // Create a new Remote Object
+            var wh = new SObjectModel.Product();
+            
+            // Use the Remote Object to query for 10 warehouse records
+            wh.retrieve({ limit: 10, where: {Name: {like: '%'+filter+'%' }} }, function(err, records, event){
+                if (err) alert(err.message);
+                else {
+                    var ul = document.getElementById("productList");
+                    removeAllChildNodes(ul);
+                    
+                    records.forEach(function(record) {
+                        // Build the text for a warehouse line item
+                        var whText = record.get("Name");
+                        whText += " -- ";
+                        whText += record.get("Description");
+                        
+                        // Add the line item to the warehouses list
+                        var li = document.createElement("li");
+                        li.appendChild(document.createTextNode(whText));
+                        ul.appendChild(li);
+                    });
+                }
+            });
+        };
+
+        function removeAllChildNodes(parent) {
+            while (parent.firstChild) parent.removeChild(parent.firstChild);
+        }
+
+        const container = document.querySelector('#container');
+        removeAllChildNodes(container);
     </script>
 
     <div class="title">
@@ -75,4 +115,22 @@
     <br/>
 
     <div id="details"></div>
+
+    <!-- Remote Objects definition to set accessible sObjects and fields -->
+    <apex:remoteObjects >
+        <apex:remoteObjectModel name="Product2" jsShorthand="Product" fields="Id,Name,ProductCode,Description">
+            <!-- <apex:remoteObjectField name="Phone__c" jsShorthand="Phone"/> -->
+        </apex:remoteObjectModel>
+    </apex:remoteObjects>
+
+    <script>
+    </script>
+
+    <div class="title">
+        <h2>Retrieve Products via Remote Objects</h2>
+    </div>
+
+    <p>Products:</p>
+
+    <ul id="productList"></ul>
 </apex:page>
