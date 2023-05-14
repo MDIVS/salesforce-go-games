@@ -1,3 +1,6 @@
+<!-- Maicon Santos, 14/05/2023 -->
+<!-- JavaScript remoting and remote objects study demo -->
+
 <apex:page controller="JSRemotingAndRemoteObjectsController" title="JavaScript Remoting and Remote Objects">
     <style>
         .title {margin: auto; text-align: center;}
