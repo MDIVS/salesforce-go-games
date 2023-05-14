@@ -1,0 +1,75 @@
+<apex:page controller="JSRemotingAndRemoteObjectsController" title="JavaScript Remoting and Remote Objects">
+    <style>
+        .title {margin: auto; text-align: center;}
+        h2 {font-size: 2em;}
+        .searchBar {margin: auto; display: flex;}
+
+        .filterName {
+            width: 100%;
+            padding: 4px;
+            margin: 8px;
+        }
+        .btnSearch {
+            font-size: 1.5em;
+            padding: 4px 16px;
+            margin: 8px;
+        }
+
+        .recordsTable {width: 100%;}
+        .recordsTable th {
+            background-color: aqua;
+            padding: 6px;
+        }
+        .recordsTable tr:nth-child(odd){
+            color: #000000;
+            background-color: #C2FFFF;
+        }
+
+        #details p {font-size:2em; margin: auto;}
+    </style>
+
+    <script type="text/javascript">
+        function getRecordsDetails() {
+            var objName = document.getElementById("JSRFilter").value;            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.JSRemotingAndRemoteObjectsController.getProductList}',
+                objName,
+                function(result, event) {
+                    if (event.status) {                        
+                        var l = result.length;
+                        if (l==0) document.getElementById("details").innerHTML='<p>No Results!</p>';
+                        else {
+                            var markup ='<table class="recordsTable">';
+                            markup += '<tr><th>Product</th><th>Product Code</th><th>Description</th></tr>';
+                            for(var i=0; i<l;i++) {
+                                var recordDetail = '<tr>' + 
+                                    "<td>" +result[i].Name + "</td>" +
+                                    "<td>" + result[i].ProductCode+ "</td>" +
+                                    "<td>" + result[i].Description + "</td>" +                                  
+                                    '</tr>';
+                                markup += recordDetail;
+                            }
+                            document.getElementById("details").innerHTML = markup;
+                        }                                                                       
+                    }
+                    else if (event.type === 'exception') document.getElementById("details").innerHTML = event.message + "<br/>\n<pre>" + event.where + "</pre>";
+                    else document.getElementById("details").innerHTML = event.message;
+                },
+                {escape: true}
+            );
+        }
+    </script>
+
+    <div class="title">
+        <h2>Query Products by using JavaScript Remoting</h2>
+    </div>
+
+    <div class="searchBar">
+        <input type="text" id="JSRFilter" class="filterName" placeholder="Filter product by name" />
+        <input type="button" value="Find" class="btnSearch" onclick="getRecordsDetails();" />
+    </div>
+
+    <br/>
+
+    <div id="details"></div>
+</apex:page>
