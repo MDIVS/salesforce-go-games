@@ -24,18 +24,4 @@ public class LeadBO {
         }
 
     }
-
-    public static String formataTelefone(Lead leadAserTratado){
-        String celular = leadAserTratado.MobilePhone;
-        String telefoneFormatado = '';
-        // (11)987623411
-        if(celular.length() == 11){
-            telefoneFormatado = '(' + celular.substring(0, 2) + ') ' + celular.substring(2, 6) + '-' + celular.substring(6);
-        }else if(celular.length() == 13){
-            // +5511987623411
-            telefoneFormatado = '+' + celular.substring(0, 2) + celular.substring(2, 6) + '-' + celular.substring(6);
-        }
-
-        return telefoneFormatado;
-    }
 }

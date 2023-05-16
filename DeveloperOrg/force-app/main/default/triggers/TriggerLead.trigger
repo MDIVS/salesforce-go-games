@@ -1,17 +1,13 @@
-trigger TriggerLead on Lead (after insert, before insert, after update, before update){
-
-    if(Trigger.IsInsert){
-        if(Trigger.IsAfter){
+trigger TriggerLead on Lead (after insert, before insert, after update, before update) {
+    if (Trigger.IsInsert) {
+        if (Trigger.IsAfter) {
            LeadBO.criarTarefa(Trigger.new);
         }
-    }else if(Trigger.IsUpdate){
-           if(Trigger.IsBefore){
-            for(Lead itemLead : Trigger.new){
-                itemLead.MobilePhone = LeadBO.formataTelefone(itemLead);
+    } else if (Trigger.IsUpdate) {
+        if (Trigger.IsBefore) {
+            for (Lead itemLead : Trigger.new) {
+                itemLead.MobilePhone = GenericUtils.formatPhone(itemLead.MobilePhone);
             }
         }
     }
-
-
-   // PESSIMA PRATICA > ID FIXO NO CODIGO
 }
